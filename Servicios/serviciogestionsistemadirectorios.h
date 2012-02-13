@@ -31,7 +31,7 @@ private:
 
     void agregaSegunDirectorio(QDir directorioInteres);
     void limpiaWatcher();
-    void registraArchivo(QString archivoInteres, QSet<QString> *conjuntoRegistrado);
+    void registraArchivo(QString archivoInteres, QDir directorio, QSet<QString> *conjuntoRegistrado);
 };
 
 #endif // SERVICIOGESTIONSISTEMADIRECTORIOS_H

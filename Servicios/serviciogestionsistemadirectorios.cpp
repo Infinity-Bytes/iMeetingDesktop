@@ -31,14 +31,15 @@ void ServicioGestionSistemaDirectorios::directorioActualizado(QString directorio
 
     QDir directorioInteres(directorioActualizado);
 
+    // Registrar archivos nuevos
     QSet<QString> archivosRegistrados = archivosPorDirectorioGestionado[directorioActualizado];
     QSet<QString> listaArchivosEnDirectorio = QSet<QString>::fromList(directorioInteres.entryList(QDir::Files));
 
-    // Registrar archivos nuevos
     QSet<QString> listaArchivosNuevos = listaArchivosEnDirectorio.subtract(archivosRegistrados);
     for(QSet<QString>::iterator it_listaArchivosNuevos = listaArchivosNuevos.begin(); it_listaArchivosNuevos != listaArchivosNuevos.end(); ++it_listaArchivosNuevos) {
-        this->registraArchivo(*it_listaArchivosNuevos, &archivosRegistrados);
+        this->registraArchivo(*it_listaArchivosNuevos, directorioInteres, &archivosRegistrados);
     }
+    archivosPorDirectorioGestionado[directorioActualizado] = archivosRegistrados;
 
     // Registrar directorios nuevos
     QSet<QString> listaDirectoriosEnDirectorio = QSet<QString>::fromList(directorioInteres.entryList(QDir::Dirs | QDir::NoDot | QDir::NoDotDot | QDir::NoDotAndDotDot));
@@ -52,18 +53,20 @@ void ServicioGestionSistemaDirectorios::agregaSegunDirectorio(QDir directorioInt
     QString pathDirectorioInteres = directorioInteres.path();
     qDebug() << QString("agregaSegunDirectorio: ") <<  pathDirectorioInteres;
 
+    // Agregar Archivos y generar notificacion de gestion
     QSet<QString> archivosInteres = archivosPorDirectorioGestionado[pathDirectorioInteres];
+
+    QStringList listaArchivos = directorioInteres.entryList(QDir::Files);
+    for(QStringList::iterator it_listaArchivos = listaArchivos.begin(); it_listaArchivos != listaArchivos.end(); ++it_listaArchivos) {
+        this->registraArchivo(*it_listaArchivos, directorioInteres, &archivosInteres);
+    }
+
+    archivosPorDirectorioGestionado[pathDirectorioInteres] = archivosInteres;
 
     // Comportamiento recursivo para agregado de directorios
     QStringList listaDirectorios = directorioInteres.entryList(QDir::Dirs | QDir::NoDot | QDir::NoDotDot | QDir::NoDotAndDotDot);
     for(QStringList::iterator it_listaDirectorios = listaDirectorios .begin(); it_listaDirectorios != listaDirectorios .end(); ++it_listaDirectorios) {
         this->agregaSegunDirectorio(directorioInteres.absoluteFilePath(*it_listaDirectorios));
-    }
-
-    // Agregar Archivos y generar notificacion de gestion
-    QStringList listaArchivos = directorioInteres.entryList(QDir::Files);
-    for(QStringList::iterator it_listaArchivos = listaArchivos.begin(); it_listaArchivos != listaArchivos.end(); ++it_listaArchivos) {
-        this->registraArchivo(*it_listaArchivos, &archivosInteres);
     }
 
     // Agregar directorio al Watcher
@@ -74,13 +77,14 @@ void ServicioGestionSistemaDirectorios::agregaSegunDirectorio(QDir directorioInt
     }
 }
 
-void ServicioGestionSistemaDirectorios::registraArchivo(QString archivoInteres, QSet<QString> * conjuntoRegistrado) {
+void ServicioGestionSistemaDirectorios::registraArchivo(QString archivoInteres, QDir directorio, QSet<QString> *conjuntoRegistrado) {
     if (!conjuntoRegistrado->contains(archivoInteres)) {
         conjuntoRegistrado->insert(archivoInteres);
 
-        qDebug() << QString("Registra nuevo archivo: ") << archivoInteres;
-        // TODO Enviar con todo y directorio Interes
-        emit gestionaArchivo(archivoInteres);
+        QString pathArchivo = directorio.absoluteFilePath(archivoInteres);
+        qDebug() << QString("Registra nuevo archivo: ") << pathArchivo;
+
+        emit gestionaArchivo(pathArchivo);
     }
 }
 
