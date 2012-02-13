@@ -12,9 +12,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         VentanaPrincipal.cpp \
-    Servicios/ServicioGestionSistemaDirectorios.cpp
+    Servicios/ServicioGestionSistemaDirectorios.cpp \
+    ControladoresVista/ControladorListadoAvance.cpp \
+    Lib/qt-json/json.cpp
 
 HEADERS  += VentanaPrincipal.h \
-    Servicios/ServicioGestionSistemaDirectorios.h
+    Servicios/ServicioGestionSistemaDirectorios.h \
+    ControladoresVista/ControladorListadoAvance.h \
+    Lib/qt-json/json.h
 
 FORMS    += VentanaPrincipal.ui
