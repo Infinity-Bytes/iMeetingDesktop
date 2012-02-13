@@ -10,6 +10,17 @@ VentanaPrincipal::VentanaPrincipal(QWidget *parent) :
 {
     ui->setupUi(this);
     this->connect(ui->actionDirectorio_base, SIGNAL(triggered()), this, SLOT(seleccionarDirectorioBase()));
+
+
+    QTreeWidgetItem * itemSuperior1 = new QTreeWidgetItem(QStringList() << "Fer" << "2" << "1");
+    itemSuperior1->addChild(new QTreeWidgetItem(QStringList() << "Raquel" << "2" << "1"));
+
+    // TODO Remover
+    ui->listadoAvance->setColumnCount(3);
+    ui->listadoAvance->setHeaderLabels(QStringList() << "Nombre" << "Total" << "Procesado");
+
+    ui->listadoAvance->addTopLevelItem(itemSuperior1);
+    ui->listadoAvance->addTopLevelItem(new QTreeWidgetItem(QStringList() << "Otro" << "3" << "3"));
 }
 
 VentanaPrincipal::~VentanaPrincipal()
