@@ -17,7 +17,7 @@ public slots:
     void estableceDirectorioBase(QString directorioBase);
     
 signals:
-    void gestionaArchivoEnDirectorio(QString archivo, QDir directorio);
+    void gestionaArchivo(QString archivo);
     
 private slots:
     void archivoActualizado(QString directorioActualizado);
@@ -31,6 +31,7 @@ private:
 
     void agregaSegunDirectorio(QDir directorioInteres);
     void limpiaWatcher();
+    void registraArchivo(QString archivoInteres, QSet<QString> *conjuntoRegistrado);
 };
 
 #endif // SERVICIOGESTIONSISTEMADIRECTORIOS_H
