@@ -2,6 +2,7 @@
 
 #include "Lib/qt-json/json.h"
 
+
 ControladorListadoAvance::ControladorListadoAvance(QObject *parent) :
     QObject(parent)
 {
@@ -20,8 +21,13 @@ void ControladorListadoAvance::cargaDefinicion(QString archivo) {
     bool valido = false;
     QVariant definicionBase = QtJson::Json::parse(archivo, valido);
     if(valido && definicionBase.canConvert(QVariant::Map)) {
-        QMap<QString, QVariant> defMeeting = definicionBase.toMap();
+        QVariantMap defMeeting = definicionBase.toMap();
+        QTreeWidgetItem * item = procesaPersonal(defMeeting);
 
         // TODO Cargado y validacion de model
     }
+}
+
+QTreeWidgetItem * ControladorListadoAvance::procesaPersonal(QVariantMap persona) {
+    // TODO Comportamiento recursivo de personas generando sumatoria (para porcentaje)
 }

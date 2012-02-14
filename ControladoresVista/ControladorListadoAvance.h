@@ -2,6 +2,8 @@
 #define CONTROLADORLISTADOAVANCE_H
 
 #include <QObject>
+#include <QVariant>
+#include <QTreeWidgetItem>
 
 class ControladorListadoAvance : public QObject
 {
@@ -16,6 +18,7 @@ public slots:
 
 private:
     void cargaDefinicion(QString archivo);
+    QTreeWidgetItem * procesaPersonal(QVariantMap persona);
 };
 
 #endif // CONTROLADORLISTADOAVANCE_H

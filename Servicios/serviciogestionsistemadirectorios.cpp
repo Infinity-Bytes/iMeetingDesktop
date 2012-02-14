@@ -17,17 +17,17 @@ void ServicioGestionSistemaDirectorios::estableceDirectorioBase(QString director
 
         if(directorioInteres.exists()) {
             this->agregaSegunDirectorio(directorioInteres);
-            qDebug() << QString("Watch: ") << directorioBase;
+            qDebug() << tr("Watch: ") << directorioBase;
         }
     }
 }
 
 void ServicioGestionSistemaDirectorios::archivoActualizado(QString directorioActualizado) {
-    qDebug() << QString("Archivo Actualizado:") << directorioActualizado;
+    qDebug() << tr("Archivo Actualizado:") << directorioActualizado;
 }
 
 void ServicioGestionSistemaDirectorios::directorioActualizado(QString directorioActualizado) {
-    qDebug() << QString("Directorio Actualizado:") << directorioActualizado;
+    qDebug() << tr("Directorio Actualizado:") << directorioActualizado;
 
     QDir directorioInteres(directorioActualizado);
 
@@ -51,7 +51,7 @@ void ServicioGestionSistemaDirectorios::directorioActualizado(QString directorio
 
 void ServicioGestionSistemaDirectorios::agregaSegunDirectorio(QDir directorioInteres) {
     QString pathDirectorioInteres = directorioInteres.path();
-    qDebug() << QString("agregaSegunDirectorio: ") <<  pathDirectorioInteres;
+    qDebug() << tr("agregaSegunDirectorio: ") <<  pathDirectorioInteres;
 
     // Agregar Archivos y generar notificacion de gestion
     QSet<QString> archivosInteres = archivosPorDirectorioGestionado[pathDirectorioInteres];
@@ -82,7 +82,7 @@ void ServicioGestionSistemaDirectorios::registraArchivo(QString archivoInteres, 
         conjuntoRegistrado->insert(archivoInteres);
 
         QString pathArchivo = directorio.absoluteFilePath(archivoInteres);
-        qDebug() << QString("Registra nuevo archivo: ") << pathArchivo;
+        qDebug() << tr("Registra nuevo archivo: ") << pathArchivo;
 
         emit gestionaArchivo(pathArchivo);
     }
