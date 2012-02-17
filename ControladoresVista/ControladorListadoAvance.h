@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QSet>
 #include <QTreeWidgetItem>
 
 class ControladorListadoAvance : public QObject
@@ -18,7 +19,13 @@ public slots:
 
 private:
     void cargaDefinicion(QString archivo);
-    QTreeWidgetItem * procesaPersonal(QVariantMap persona);
+    QTreeWidgetItem * procesaPersonal(QVariantMap persona, QSet<QTreeWidgetItem *> padres);
+
+    enum PosicionInfoColumnas {
+        ACUMULADOR = 1,
+        DERIVADOS = 2,
+        NUM_COLUMNAS = 3
+    };
 };
 
 #endif // CONTROLADORLISTADOAVANCE_H
