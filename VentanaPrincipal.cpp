@@ -9,7 +9,12 @@ VentanaPrincipal::VentanaPrincipal(QWidget *parent) :
     ui(new Ui::VentanaPrincipal)
 {
     ui->setupUi(this);
+    ui->listadoAvance->setColumnCount(3);
+    ui->listadoAvance->setHeaderLabels(QStringList() << "Nombre" << "Acumulador" << "Derivados");
+    controladorListadoAvance = new ControladorListadoAvance(ui->listadoAvance, this);
+
     this->connect(ui->actionDirectorio_base, SIGNAL(triggered()), this, SLOT(seleccionarDirectorioBase()));
+    this->connect(&servicioGestionSistemaDirectorios, SIGNAL(gestionaArchivo(QString)), controladorListadoAvance, SLOT(gestionaArchivo(QString)));
 }
 
 VentanaPrincipal::~VentanaPrincipal()

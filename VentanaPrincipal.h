@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "Servicios/ServicioGestionSistemaDirectorios.h"
+#include "ControladoresVista/ControladorListadoAvance.h"
 
 namespace Ui {
 class VentanaPrincipal;
@@ -22,6 +23,7 @@ public slots:
 private:
     Ui::VentanaPrincipal *ui;
     ServicioGestionSistemaDirectorios servicioGestionSistemaDirectorios;
+    ControladorListadoAvance * controladorListadoAvance;
 };
 
 #endif // VENTANAPRINCIPAL_H

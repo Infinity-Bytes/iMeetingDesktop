@@ -2,9 +2,12 @@
 
 #include "Lib/qt-json/json.h"
 
+#include <QDebug>
+#include <QFile>
+#include <QTextStream>
 
-ControladorListadoAvance::ControladorListadoAvance(QObject *parent) :
-    QObject(parent)
+ControladorListadoAvance::ControladorListadoAvance(QTreeWidget *arbol, QObject *parent) :
+    QObject(parent), arbol(arbol)
 {
 }
 
@@ -18,18 +21,75 @@ void ControladorListadoAvance::gestionaArchivo(QString archivo) {
 
 
 void ControladorListadoAvance::cargaDefinicion(QString archivo) {
-    bool valido = false;
-    QVariant definicionBase = QtJson::Json::parse(archivo, valido);
+
+    QFile file(archivo);
+    file.open(QIODevice::ReadWrite | QIODevice::Text);
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    QString line = out.readAll();
+
+    file.close(); // when your done.
+
+    bool valido = true;
+    QVariant definicionBase = QtJson::Json::parse(line, valido);
     if(valido && definicionBase.canConvert(QVariant::Map)) {
         QVariantMap defMeeting = definicionBase.toMap();
         QTreeWidgetItem * item = procesaPersonal(defMeeting, QSet<QTreeWidgetItem *>());
+        item->setText(NOMBRE, defMeeting["nombreMeeting"].toString());
 
-        // TODO Cargado y validacion de model
+        // Cargado y validacion de model
+        for(QMap<QString, QMap<QString, QString> >::iterator it_propiedadesPorIdentificador = propiedadesPorIdentificador.begin(); it_propiedadesPorIdentificador != propiedadesPorIdentificador.end(); ++it_propiedadesPorIdentificador) {
+            QString identificador = it_propiedadesPorIdentificador.key();
+            QMap<QString, QString> propiedaes = it_propiedadesPorIdentificador.value();
+
+            QSet<QTreeWidgetItem *> itemsInteres = itemsPorIdentificador[identificador];
+            for(QSet<QTreeWidgetItem *>::iterator it_widgetInteres = itemsInteres.begin(); it_widgetInteres != itemsInteres.end(); ++it_widgetInteres) {
+
+                // TODO Cargar propiedades de interes para mostrar
+                if (propiedaes.contains("nombre")) {
+                    QTreeWidgetItem * itemInteres = *it_widgetInteres;
+                    itemInteres->setText(NOMBRE, propiedaes["nombre"]);
+                }
+            }
+        }
+
+        arbol->addTopLevelItem(item);
     }
 }
 
 QTreeWidgetItem * ControladorListadoAvance::procesaPersonal(QVariantMap persona, QSet<QTreeWidgetItem *> padres) {
     QTreeWidgetItem * salida = new QTreeWidgetItem();
+
+    // Almacenado elementos que tienen interes en un identificador especifico
+    if(persona.contains("identificador")) {
+        QString identificadorInteres = persona["identificador"].toString();
+        QSet<QTreeWidgetItem *> conjuntoItemsPorIdentifiacor = itemsPorIdentificador[identificadorInteres];
+        QMap<QString, QString> propiedaesInteres = propiedadesPorIdentificador[identificadorInteres];
+
+        conjuntoItemsPorIdentifiacor.insert(salida);
+        itemsPorIdentificador[identificadorInteres] = conjuntoItemsPorIdentifiacor;
+
+
+        QStringList llaves = persona.keys();
+        qDebug() << llaves;
+
+        // Obtencion de propiedades de elemento de interés y almacenado en objeto correspondiente
+        for(QStringList::iterator it_propiedades = llaves.begin(); it_propiedades != llaves.end(); ++it_propiedades) {
+            QString propX = *it_propiedades;
+            qDebug() << propX;
+            QVariant valorPropiedad = persona[propX];
+            if (valorPropiedad.canConvert(QVariant::String)) {
+                QString valorPropiedadString = valorPropiedad.toString();
+                if(valorPropiedadString.trimmed().length()) {
+                    qDebug() << tr("propiedaesInteres[") << propX << "] = " << valorPropiedadString;
+
+                    propiedaesInteres[propX] = valorPropiedadString;
+                }
+            }
+        }
+
+        propiedadesPorIdentificador[identificadorInteres] = propiedaesInteres;
+    }
 
     QSet<QTreeWidgetItem *> conjuntoDerivado(padres);
     conjuntoDerivado.insert(salida);
@@ -50,7 +110,6 @@ QTreeWidgetItem * ControladorListadoAvance::procesaPersonal(QVariantMap persona,
             }
         }
     }
-
 
     // Si no tiene elementos derivados agregar 1 a los elementos padres
     if(!salida->childCount()) {

@@ -10,7 +10,7 @@ class ControladorListadoAvance : public QObject
 {
     Q_OBJECT
 public:
-    explicit ControladorListadoAvance(QObject *parent = 0);
+    explicit ControladorListadoAvance(QTreeWidget * arbol, QObject *parent = 0);
     
 signals:
     
@@ -22,10 +22,14 @@ private:
     QTreeWidgetItem * procesaPersonal(QVariantMap persona, QSet<QTreeWidgetItem *> padres);
 
     enum PosicionInfoColumnas {
+        NOMBRE = 0,
         ACUMULADOR = 1,
-        DERIVADOS = 2,
-        NUM_COLUMNAS = 3
+        DERIVADOS = 2
     };
+
+    QMap<QString, QSet<QTreeWidgetItem *> > itemsPorIdentificador;
+    QMap<QString, QMap<QString, QString> > propiedadesPorIdentificador;
+    QTreeWidget * arbol;
 };
 
 #endif // CONTROLADORLISTADOAVANCE_H
