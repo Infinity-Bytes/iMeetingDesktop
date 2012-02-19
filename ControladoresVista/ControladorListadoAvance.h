@@ -19,6 +19,8 @@ public slots:
 
 private:
     void cargaDefinicion(QString archivo);
+    void cargarElementosTrabajados(QString archivo);
+
     QTreeWidgetItem * procesaPersonal(QVariantMap persona, QSet<QTreeWidgetItem *> padres);
 
     enum PosicionInfoColumnas {

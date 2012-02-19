@@ -1,6 +1,8 @@
 #include "ControladorListadoAvance.h"
 
 #include "Lib/qt-json/json.h"
+#include "Lib/quazip/quazip.h"
+#include "Lib/quazip/quazipfile.h"
 
 #include <QDebug>
 #include <QFile>
@@ -16,7 +18,10 @@ void ControladorListadoAvance::gestionaArchivo(QString archivo) {
         this->cargaDefinicion(archivo);
     }
 
-    // TODO Ver Zip, su contenido y generar las actualizaciones pertinentes como si se descomprimiera
+    if(archivo.endsWith(".zip")) {
+        // Ver Zip, su contenido y generar las actualizaciones pertinentes como si se descomprimiera
+        this->cargarElementosTrabajados(archivo);
+    }
 }
 
 
@@ -54,6 +59,25 @@ void ControladorListadoAvance::cargaDefinicion(QString archivo) {
         }
 
         arbol->addTopLevelItem(item);
+    }
+}
+
+void ControladorListadoAvance::cargarElementosTrabajados(QString archivo) {
+    QuaZip zip(archivo);
+
+    if (!zip.open(QuaZip::mdUnzip)) {
+        qWarning("testRead(): zip.open(): %d", zip.getZipError());
+        return;
+    }
+
+    zip.setFileNameCodec("UTF-8");
+
+    qWarning("%d entries\n", zip.getEntriesCount());
+    QList<QuaZipFileInfo> elementos = zip.getFileInfoList();
+    for(QList<QuaZipFileInfo>::iterator it_elementos = elementos.begin(); it_elementos != elementos.end(); ++it_elementos) {
+        QuaZipFileInfo info = *it_elementos;
+        QString nombre = info.name;
+        qDebug() << tr("Nombre: ") << nombre;
     }
 }
 
